@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem } from './CartSlice';
 import './ProductList.css'
 import CartItem from './CartItem';
 function ProductList({ onHomeClick }) {
+    const dispatch = useDispatch(); 
+    const cartItems = useSelector(state => state.cart.items);
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
 
@@ -252,6 +256,15 @@ function ProductList({ onHomeClick }) {
         e.preventDefault();
         setShowCart(false);
     };
+    const handleAddToCart = (plant) => {
+        dispatch(addItem(plant));
+    };
+    const calculateTotalQuantity = () => {
+        return cartItems
+            ? cartItems.reduce((total, item) => total + item.quantity, 0)
+            : 0;
+    };
+
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -268,14 +281,79 @@ function ProductList({ onHomeClick }) {
 
                 </div>
                 <div style={styleObjUl}>
-                    <div> <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>Plants</a></div>
-                    <div> <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}><h1 className='cart'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68"><rect width="156" height="156" fill="none"></rect><circle cx="80" cy="216" r="12"></circle><circle cx="184" cy="216" r="12"></circle><path d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8" fill="none" stroke="#faf9f9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" id="mainIconPathAttribute"></path></svg></h1></a></div>
+                <div>
+                    <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
+                        <span style={{ position: 'relative', display: 'inline-block' }}>
+
+                        <h1 className='cart'>
+                            <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            height="68"
+                            width="68"
+                            >
+                            <rect width="156" height="156" fill="none"></rect>
+                            <circle cx="80" cy="216" r="12"></circle>
+                            <circle cx="184" cy="216" r="12"></circle>
+                            <path
+                                d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8"
+                                fill="none"
+                                stroke="#faf9f9"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                            />
+                            </svg>
+                        </h1>
+
+                        {calculateTotalQuantity() > 0 && (
+                            <span
+                            style={{
+                                position: 'absolute',
+                                top: '-8px',
+                                right: '-8px',
+                                background: 'red',
+                                color: 'white',
+                                borderRadius: '50%',
+                                padding: '4px 8px',
+                                fontSize: '14px',
+                                fontWeight: 'bold'
+                            }}
+                            >
+                            {calculateTotalQuantity()}
+                            </span>
+                        )}
+
+                        </span>
+                    </a>
+                    </div>
                 </div>
             </div>
             {!showCart ? (
                 <div className="product-grid">
+                    {showPlants && plantsArray.map((category, index) => (
+                        <div key={index}>
+                            <h2>{category.category}</h2>
 
+                            <div className="plants-container">
+                                {category.plants.map((plant, idx) => (
+                                    <div className="plant-card" key={idx}>
+                                        <img src={plant.image} alt={plant.name} />
+                                        <h3>{plant.name}</h3>
+                                        <p>{plant.description}</p>
+                                        <p>{plant.cost}</p>
 
+                                        <button
+                                            onClick={() => handleAddToCart(plant)}
+                                        >
+                                            Add to Cart
+                                        </button>
+
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             ) : (
                 <CartItem onContinueShopping={handleContinueShopping} />
