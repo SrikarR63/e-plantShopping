@@ -7,7 +7,7 @@ function ProductList({ onHomeClick }) {
     const dispatch = useDispatch(); 
     const cartItems = useSelector(state => state.cart.items);
     const [showCart, setShowCart] = useState(false);
-    const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
+    const [showPlants, setShowPlants] = useState(true); // State to control the visibility of the About Us page
 
     const plantsArray = [
         {
